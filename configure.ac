@@ -58,6 +58,9 @@ AC_ARG_ENABLE(debug,
 AC_ARG_ENABLE(coverage,
     AS_HELP_STRING([--enable-coverage],[enable code coverage (default: no)]),
     [coverage=$enableval], [coverage=no])
+AC_ARG_ENABLE(lto,
+    AS_HELP_STRING([--disable-lto],[disable lto (default: yes)]),
+    [lto-$enableval], [lto=yes])
 
 CFLAGS=`echo $CFLAGS | $GNU_SED -e 's/-O2//g' | $GNU_SED -e 's/-g//g'`
 
@@ -87,8 +90,10 @@ else
     AX_CHECK_COMPILE_FLAG([-fstack-protector-strong], [AM_CFLAGS="$AM_CFLAGS -fstack-protector-strong"])
     AX_CHECK_COMPILE_FLAG([-DNDEBUG=1], [AM_CFLAGS="$AM_CFLAGS -DNDEBUG=1"])
     AX_CHECK_LINK_FLAG([-O3], [LDFLAGS="$LDFLAGS -O3"])
-    AX_CHECK_LINK_FLAG([-flto], [LDFLAGS="$LDFLAGS -flto"])
-    AX_CHECK_LINK_FLAG([-flto], [AM_CFLAGS="$AM_CFLAGS -flto"])
+    if test "x$lto" == "xyes"; then
+        AX_CHECK_LINK_FLAG([-flto], [LDFLAGS="$LDFLAGS -flto"])
+        AX_CHECK_LINK_FLAG([-flto], [AM_CFLAGS="$AM_CFLAGS -flto"])
+    fi
     AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 fi
 
